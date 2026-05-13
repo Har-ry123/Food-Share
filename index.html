@@ -1,0 +1,854 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>sharePlate</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f4f8;color:#1a202c;min-height:100vh}
+/* NAV */
+nav{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:100}
+.logo{display:flex;align-items:center;gap:8px;font-size:1.15rem;font-weight:700;color:#1a202c;cursor:pointer;text-decoration:none}
+.logo svg{color:#3ab5e6}
+.nav-r{display:flex;align-items:center;gap:6px}
+.nav-link{background:none;border:none;padding:8px 14px;font-size:.9rem;color:#4a5568;cursor:pointer;border-radius:8px;font-family:inherit;transition:.15s}
+.nav-link:hover{background:#f7fafc;color:#1a202c}
+.nav-btn{display:flex;align-items:center;gap:6px;background:#3ab5e6;color:#fff;border:none;padding:9px 18px;border-radius:20px;font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}
+.nav-btn:hover{background:#2da0d0}
+.nav-icon{background:none;border:none;padding:8px;cursor:pointer;color:#4a5568;border-radius:8px;font-size:1.1rem;transition:.15s}
+.nav-icon:hover{background:#f7fafc;color:#1a202c}
+/* PAGES */
+.page{display:none;padding-top:60px;min-height:100vh}
+.page.on{display:block}
+/* LANDING */
+.hero{text-align:center;padding:90px 24px 60px;background:linear-gradient(160deg,#e8f4fd 0%,#f0f8f0 100%);min-height:calc(100vh - 60px);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.hero h1{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;color:#1a202c;margin-bottom:16px;line-height:1.1}
+.hero h1 span{color:#3ab5e6}
+.hero p{font-size:1.05rem;color:#718096;max-width:520px;line-height:1.7;margin-bottom:36px}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:60px}
+.btn-primary{background:#3ab5e6;color:#fff;border:none;padding:13px 28px;border-radius:20px;font-size:.95rem;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}
+.btn-primary:hover{background:#2da0d0;transform:translateY(-1px)}
+.btn-outline{background:#fff;color:#1a202c;border:1.5px solid #e2e8f0;padding:13px 28px;border-radius:20px;font-size:.95rem;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}
+.btn-outline:hover{border-color:#3ab5e6;transform:translateY(-1px)}
+.stats-row{display:flex;gap:40px;flex-wrap:wrap;justify-content:center}
+.stat{text-align:center}
+.stat-n{font-size:2rem;font-weight:800;color:#3ab5e6}
+.stat-l{font-size:.82rem;color:#718096;margin-top:2px}
+/* HOW IT WORKS */
+.section{padding:70px 24px;max-width:1100px;margin:0 auto}
+.section-title{text-align:center;font-size:1.8rem;font-weight:800;margin-bottom:8px}
+.section-sub{text-align:center;color:#718096;margin-bottom:48px;font-size:.95rem}
+.cards3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.hcard{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:28px 24px;text-align:center}
+.hcard-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 16px}
+.ic-b{background:#e8f4fd}.ic-g{background:#e8f8ee}.ic-p{background:#f3e8fd}
+.hcard h3{font-size:1rem;font-weight:700;margin-bottom:8px}
+.hcard p{font-size:.87rem;color:#718096;line-height:1.6}
+/* BROWSE */
+.browse-wrap{max-width:1200px;margin:0 auto;padding:32px 24px}
+.browse-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.browse-top h2{font-size:1.4rem;font-weight:700}
+.search-row{display:flex;gap:10px;flex-wrap:wrap}
+.search-box{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:0 14px;min-width:220px}
+.search-box input{border:none;outline:none;font-family:inherit;font-size:.88rem;color:#1a202c;padding:10px 0;background:transparent;width:100%}
+.search-box input::placeholder{color:#a0aec0}
+.filter-chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:7px 16px;border:1.5px solid #e2e8f0;border-radius:20px;font-size:.82rem;font-weight:500;color:#4a5568;cursor:pointer;background:#fff;font-family:inherit;transition:.15s}
+.chip:hover,.chip.active{border-color:#3ab5e6;color:#3ab5e6;background:#e8f4fd}
+.food-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.fcard{background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;transition:.2s;cursor:pointer}
+.fcard:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.08)}
+.fcard-img{height:160px;display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative}
+.fbadge{position:absolute;top:10px;right:10px;padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700}
+.bfree{background:#dcfce7;color:#166534}
+.bswap{background:#dbeafe;color:#1e40af}
+.burgent{background:#fef3c7;color:#92400e}
+.fcard-body{padding:16px 18px}
+.fcard-title{font-weight:700;font-size:.97rem;margin-bottom:4px}
+.fcard-desc{font-size:.82rem;color:#718096;line-height:1.5;margin-bottom:12px}
+.fcard-meta{display:flex;align-items:center;justify-content:space-between}
+.fcard-user{display:flex;align-items:center;gap:7px;font-size:.8rem;color:#4a5568}
+.avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#fff}
+.fcard-loc{font-size:.76rem;color:#a0aec0}
+.fcard-actions{padding:0 18px 16px;display:flex;gap:8px}
+.btn-claim{flex:1;padding:9px;background:#3ab5e6;color:#fff;border:none;border-radius:8px;font-size:.83rem;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}
+.btn-claim:hover{background:#2da0d0}
+.btn-save{width:36px;height:36px;border:1.5px solid #e2e8f0;border-radius:8px;background:#fff;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;transition:.15s}
+.btn-save:hover{border-color:#3ab5e6}
+.btn-save.saved{background:#e8f4fd;border-color:#3ab5e6}
+.lock-wall{grid-column:1/-1;text-align:center;background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:60px 24px}
+.lock-wall .lw-icon{font-size:3rem;margin-bottom:16px}
+.lock-wall h3{font-size:1.3rem;font-weight:700;margin-bottom:8px}
+.lock-wall p{color:#718096;margin-bottom:24px;font-size:.93rem}
+.lock-wall .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.empty-wall{grid-column:1/-1;text-align:center;background:#fff;border:1px dashed #e2e8f0;border-radius:16px;padding:60px 24px;color:#a0aec0}
+.empty-wall .ew-icon{font-size:2.8rem;margin-bottom:14px}
+.empty-wall h3{font-size:1.1rem;font-weight:600;color:#4a5568;margin-bottom:8px}
+.empty-wall p{font-size:.87rem;margin-bottom:20px}
+ 
+/* SHARE FORM */
+.share-wrap{max-width:600px;margin:0 auto;padding:36px 24px}
+.share-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:36px}
+.share-card h2{font-size:1.5rem;font-weight:700;margin-bottom:28px}
+.fg{margin-bottom:20px}
+.fg label{display:block;font-size:.84rem;font-weight:600;color:#4a5568;margin-bottom:7px}
+.fg input,.fg textarea,.fg select{width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-family:inherit;font-size:.9rem;color:#1a202c;outline:none;transition:.2s;background:#fff}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:#3ab5e6;box-shadow:0 0 0 3px rgba(58,181,230,.1)}
+.fg input::placeholder,.fg textarea::placeholder{color:#a0aec0}
+.fg textarea{min-height:100px;resize:vertical}
+.fg select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a0aec0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.upload-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.87rem;font-weight:500;color:#4a5568;cursor:pointer;background:#fff;font-family:inherit;transition:.15s}
+.upload-btn:hover{border-color:#3ab5e6;color:#3ab5e6}
+.loc-hint{font-size:.76rem;color:#a0aec0;margin-top:6px}
+.btn-submit{width:100%;padding:13px;background:#3ab5e6;color:#fff;border:none;border-radius:10px;font-size:.97rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-submit:hover{background:#2da0d0}
+.spin{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:none}
+.btn-submit.ld .spin{display:block}.btn-submit.ld .bt{opacity:0}
+@keyframes sp{to{transform:rotate(360deg)}}
+.fg.er input,.fg.er textarea,.fg.er select{border-color:#e53e3e}
+.errtxt{color:#e53e3e;font-size:.76rem;margin-top:4px}
+ 
+/* DASHBOARD */
+.dash-wrap{max-width:1100px;margin:0 auto;padding:36px 24px}
+.dash-wrap h1{font-size:2rem;font-weight:800;margin-bottom:24px}
+.dash-tabs{display:flex;gap:4px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:4px;width:fit-content;margin-bottom:32px}
+.dtab{padding:8px 18px;border-radius:9px;border:none;background:none;font-family:inherit;font-size:.88rem;font-weight:500;color:#4a5568;cursor:pointer;display:flex;align-items:center;gap:7px;transition:.15s}
+.dtab:hover{background:#f7fafc}
+.dtab.active{background:#f0f4f8;color:#1a202c;font-weight:600}
+.tab-content{display:none}.tab-content.on{display:block}
+ 
+/* My Items tab */
+.items-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.items-count{font-size:.9rem;color:#718096}
+.items-list{background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden}
+.item-row{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f0f4f8;transition:.15s}
+.item-row:last-child{border-bottom:none}
+.item-row:hover{background:#fafbfc}
+.item-info h4{font-size:.93rem;font-weight:600;color:#1a202c;margin-bottom:3px}
+.item-info p{font-size:.8rem;color:#a0aec0}
+.item-status{padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:600}
+.st-avail{background:#dcfce7;color:#166534}
+.st-claimed{background:#dbeafe;color:#1e40af}
+.st-pending{background:#fef3c7;color:#92400e}
+.claim-alert{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;margin-top:8px;font-size:.82rem;color:#92400e;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.claim-alert strong{color:#1a202c}
+.btn-accept{padding:6px 14px;background:#16a34a;color:#fff;border:none;border-radius:7px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}
+.btn-accept:hover{background:#15803d}
+.btn-reject{padding:6px 14px;background:#fff;color:#e53e3e;border:1.5px solid #e53e3e;border-radius:7px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}
+.btn-reject:hover{background:#fff5f5}
+.no-items{padding:40px;text-align:center;color:#a0aec0;font-size:.9rem}
+ 
+/* My Claims tab */
+.claim-row{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f0f4f8}
+.claim-row:last-child{border-bottom:none}
+.claim-info h4{font-size:.93rem;font-weight:600;margin-bottom:3px}
+.claim-info p{font-size:.8rem;color:#a0aec0}
+ 
+/* Profile tab */
+.profile-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:32px;max-width:480px}
+.profile-ava{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#3ab5e6,#48d1a8);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;color:#fff;margin-bottom:18px}
+.profile-name{font-size:1.2rem;font-weight:700;margin-bottom:4px}
+.profile-email{font-size:.87rem;color:#718096;margin-bottom:20px}
+.profile-stats{display:flex;gap:24px;margin-bottom:24px}
+.ps{text-align:center}.ps-n{font-size:1.5rem;font-weight:800;color:#3ab5e6}.ps-l{font-size:.76rem;color:#718096;margin-top:2px}
+.btn-logout{display:flex;align-items:center;gap:7px;padding:10px 20px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.87rem;font-weight:500;color:#e53e3e;cursor:pointer;background:#fff;font-family:inherit;transition:.15s}
+.btn-logout:hover{border-color:#e53e3e;background:#fff5f5}
+ 
+/* MODALS */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.mo.on{opacity:1;pointer-events:all}
+.md{background:#fff;border-radius:18px;padding:36px 32px;width:100%;max-width:420px;box-shadow:0 20px 50px rgba(0,0,0,.15);transform:translateY(18px);transition:transform .25s;position:relative}
+.mo.on .md{transform:none}
+.md-close{position:absolute;top:14px;right:16px;width:30px;height:30px;border:none;background:#f0f4f8;border-radius:50%;cursor:pointer;font-size:.95rem;color:#718096;display:flex;align-items:center;justify-content:center;transition:.15s}
+.md-close:hover{background:#e2e8f0}
+.md-logo{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:700;margin-bottom:20px}
+.md h2{font-size:1.5rem;font-weight:800;margin-bottom:6px}
+.md-sub{font-size:.87rem;color:#718096;margin-bottom:24px}
+.md-sub a{color:#3ab5e6;font-weight:600;cursor:pointer}
+.md-sub a:hover{text-decoration:underline}
+.mfg{margin-bottom:14px}
+.mfg label{display:block;font-size:.8rem;font-weight:600;color:#4a5568;margin-bottom:6px}
+.mfg input{width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:9px;font-family:inherit;font-size:.9rem;color:#1a202c;outline:none;transition:.2s}
+.mfg input:focus{border-color:#3ab5e6;box-shadow:0 0 0 3px rgba(58,181,230,.1)}
+.mfg input.er{border-color:#e53e3e}
+.et{color:#e53e3e;font-size:.74rem;margin-top:4px;display:none}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mfooter{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;font-size:.82rem}
+.rem{display:flex;align-items:center;gap:7px;color:#4a5568;cursor:pointer}
+.fgot{color:#3ab5e6;font-weight:600;cursor:pointer;font-size:.82rem}
+.fgot:hover{text-decoration:underline}
+.md-submit{width:100%;padding:12px;background:#3ab5e6;color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:.93rem;font-weight:700;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.md-submit:hover{background:#2da0d0}
+.md-submit.ld .spin{display:block}.md-submit.ld .bt{opacity:0}
+.md-div{display:flex;align-items:center;gap:10px;color:#a0aec0;font-size:.78rem;margin:16px 0}
+.md-div::before,.md-div::after{content:'';flex:1;height:1px;background:#e2e8f0}
+.goog-btn{width:100%;padding:11px;background:#fff;border:1.5px solid #e2e8f0;border-radius:9px;display:flex;align-items:center;justify-content:center;gap:9px;font-family:inherit;font-size:.88rem;font-weight:600;color:#1a202c;cursor:pointer;transition:.15s}
+.goog-btn:hover{border-color:#a0aec0}
+.md-succ{display:none;text-align:center;padding:10px 0}
+.md-succ .sk{font-size:2.8rem;margin-bottom:12px}
+.md-succ h3{font-size:1.2rem;font-weight:700;margin-bottom:6px}
+.md-succ p{font-size:.87rem;color:#718096}
+ 
+/* CLAIM MODAL */
+#mClaim .md{max-width:380px}
+ 
+/* FOOTER */
+.footer{background:#fff;border-top:1px solid #e2e8f0;padding:40px 24px;text-align:center;margin-top:60px}
+.footer .fl{display:flex;align-items:center;justify-content:center;gap:8px;font-size:1rem;font-weight:700;margin-bottom:8px}
+.footer p{font-size:.83rem;color:#718096}
+ 
+/* TOAST */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(14px);background:#1a202c;color:#fff;padding:11px 22px;border-radius:10px;font-size:.86rem;font-weight:500;z-index:300;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+ 
+@media(max-width:600px){nav{padding:0 16px}.share-wrap,.browse-wrap,.dash-wrap{padding:20px 16px}.share-card{padding:22px}.md{padding:28px 20px}}
+</style>
+</head>
+<body>
+ 
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="go('home')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    sharePlate
+  </div>
+  <div class="nav-r" id="navR">
+    <button class="nav-link" onclick="go('browse')" id="nBrowse">Browse Food</button>
+    <button class="nav-btn" onclick="authGo('share')">&#43; Share Food</button>
+    <button class="nav-link" onclick="om('Login')" id="nLogin">Log In</button>
+    <button class="nav-btn" style="background:#fff;color:#3ab5e6;border:1.5px solid #3ab5e6" onclick="om('Signup')" id="nSignup">Sign Up</button>
+    <button class="nav-link" onclick="go('dashboard')" id="nDash" style="display:none;align-items:center;gap:6px">⊞ Dashboard</button>
+    <button class="nav-icon" onclick="logout()" id="nOut" style="display:none" title="Logout">&#8594;&#x2502;</button>
+  </div>
+</nav>
+ 
+<!-- HOME -->
+<div class="page on" id="page-home">
+  <div class="hero">
+    <h1>Share Food,<br><span>Build Community</span></h1>
+    <p>Connect with neighbours to share surplus food, reduce waste, and strengthen your community — one plate at a time.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="go('browse')">Browse Available Food</button>
+      <button class="btn-outline" onclick="authGo('share')">Share Your Food</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-n">12,400+</div><div class="stat-l">Meals Shared</div></div>
+      <div class="stat"><div class="stat-n">3,200+</div><div class="stat-l">Active Members</div></div>
+      <div class="stat"><div class="stat-n">48</div><div class="stat-l">Neighbourhoods</div></div>
+      <div class="stat"><div class="stat-n">98%</div><div class="stat-l">Happy Exchanges</div></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">How It Works</div>
+    <div class="section-sub">Simple steps to start sharing and reducing food waste</div>
+    <div class="cards3">
+      <div class="hcard"><div class="hcard-icon ic-b">📍</div><h3>Find Food Near You</h3><p>Browse surplus meals and fresh produce listed by neighbours in your area.</p></div>
+      <div class="hcard"><div class="hcard-icon ic-g">🍱</div><h3>Share Your Surplus</h3><p>Post extra food in seconds with a photo, description and pickup details.</p></div>
+      <div class="hcard"><div class="hcard-icon ic-p">🤝</div><h3>Connect & Collect</h3><p>Claim food, arrange pickup, and build real connections in your community.</p></div>
+    </div>
+  </div>
+  <div class="footer">
+    <div class="fl">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="#3ab5e6"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      sharePlate
+    </div>
+    <p>Reducing food waste, one plate at a time.</p>
+    <p style="margin-top:6px">© 2026 sharePlate. All rights reserved.</p>
+  </div>
+</div>
+ 
+<!-- BROWSE -->
+<div class="page" id="page-browse">
+  <div class="browse-wrap">
+    <div class="browse-top">
+      <h2>Browse Food</h2>
+      <div class="search-row">
+        <div class="search-box">🔍 <input type="text" id="srch" placeholder="Search food…" oninput="filterF()"/></div>
+      </div>
+    </div>
+    <div class="filter-chips" style="margin-bottom:20px">
+      <button class="chip active" onclick="setF(this,'all')">All</button>
+      <button class="chip" onclick="setF(this,'free')">Free</button>
+      <button class="chip" onclick="setF(this,'swap')">Swap</button>
+      <button class="chip" onclick="setF(this,'urgent')">Urgent</button>
+    </div>
+    <div class="food-grid" id="fg"></div>
+  </div>
+  <div class="footer">
+    <div class="fl"><svg width="18" height="18" viewBox="0 0 24 24" fill="#3ab5e6"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>sharePlate</div>
+    <p>Reducing food waste, one plate at a time.</p>
+    <p style="margin-top:6px">© 2026 sharePlate. All rights reserved.</p>
+  </div>
+</div>
+ 
+<!-- SHARE -->
+<div class="page" id="page-share">
+  <div class="share-wrap">
+    <div class="share-card">
+      <h2>Share Food</h2>
+      <div class="fg" id="fg-name">
+        <label>Food Name *</label>
+        <input type="text" id="sName" placeholder="e.g. Homemade Pasta"/>
+        <div class="errtxt" id="sNameErr">Food name is required.</div>
+      </div>
+      <div class="fg">
+        <label>Description</label>
+        <textarea id="sDesc" placeholder="Describe the food, any allergens, etc."></textarea>
+      </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label>Category</label>
+          <select id="sCat">
+            <option value="other">Other</option>
+            <option value="cooked">Cooked Meal</option>
+            <option value="baked">Baked Goods</option>
+            <option value="produce">Fresh Produce</option>
+            <option value="pantry">Pantry Items</option>
+            <option value="snacks">Snacks</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Quantity</label>
+          <input type="text" id="sQty" placeholder="e.g. 3 servings"/>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Expiry Date</label>
+        <input type="date" id="sExp"/>
+      </div>
+      <div class="fg">
+        <label>Photo</label>
+        <button class="upload-btn" type="button" onclick="toast('📸 Image upload coming soon!')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Photo
+        </button>
+      </div>
+      <div class="fg" id="fg-loc">
+        <label>📍 Pickup Location</label>
+        <input type="text" id="sAddr" placeholder="Address or landmark" style="margin-bottom:8px"/>
+        <div class="fg-row" style="margin-bottom:0">
+          <input type="number" id="sLat" placeholder="Latitude" step="any"/>
+          <input type="number" id="sLng" placeholder="Longitude" step="any"/>
+        </div>
+        <div class="loc-hint">Tip: Right-click on Google Maps and copy coordinates.</div>
+      </div>
+      <button class="btn-submit" id="shareBtn" onclick="doShare()">
+        <span class="spin"></span><span class="bt">Share This Food</span>
+      </button>
+    </div>
+  </div>
+  <div class="footer">
+    <div class="fl"><svg width="18" height="18" viewBox="0 0 24 24" fill="#3ab5e6"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>sharePlate</div>
+    <p>Reducing food waste, one plate at a time.</p>
+    <p style="margin-top:6px">© 2026 sharePlate. All rights reserved.</p>
+  </div>
+</div>
+ 
+<!-- DASHBOARD -->
+<div class="page" id="page-dashboard">
+  <div class="dash-wrap">
+    <h1>Dashboard</h1>
+    <div class="dash-tabs">
+      <button class="dtab active" onclick="switchTab('items',this)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+        My Items
+      </button>
+      <button class="dtab" onclick="switchTab('claims',this)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.57l1.65-7.43H6"/></svg>
+        My Claims
+      </button>
+      <button class="dtab" onclick="switchTab('profile',this)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile
+      </button>
+    </div>
+ 
+    <!-- MY ITEMS -->
+    <div class="tab-content on" id="tab-items">
+      <div class="items-header">
+        <span class="items-count" id="itemsCount">0 item(s) shared</span>
+        <div style="display:flex;gap:8px">
+          <button onclick="updDash()" style="padding:9px 14px;font-size:.82rem;border-radius:20px;border:1.5px solid #e2e8f0;background:#fff;cursor:pointer;color:#4a5568" title="Refresh">🔄 Refresh</button>
+          <button class="btn-primary" onclick="go('share')" style="padding:9px 18px;font-size:.85rem;border-radius:20px">+ Share More</button>
+        </div>
+      </div>
+      <div class="items-list" id="itemsList">
+        <div class="no-items">No items shared yet.</div>
+      </div>
+    </div>
+ 
+    <!-- MY CLAIMS -->
+    <div class="tab-content" id="tab-claims">
+      <div class="items-list" id="claimsList">
+        <div class="no-items">No claims yet. <a style="color:#3ab5e6;cursor:pointer" onclick="go('browse')">Browse food →</a></div>
+      </div>
+    </div>
+ 
+    <!-- PROFILE -->
+    <div class="tab-content" id="tab-profile">
+      <div class="profile-card">
+        <div class="profile-ava" id="profAv">A</div>
+        <div class="profile-name" id="profName">–</div>
+        <div class="profile-email" id="profEmail">–</div>
+        <div class="profile-stats">
+          <div class="ps"><div class="ps-n" id="psShared">0</div><div class="ps-l">Shared</div></div>
+          <div class="ps"><div class="ps-n" id="psClaimed">0</div><div class="ps-l">Claimed</div></div>
+        </div>
+        <button class="btn-logout" onclick="logout()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Log Out
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <div class="fl"><svg width="18" height="18" viewBox="0 0 24 24" fill="#3ab5e6"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>sharePlate</div>
+    <p>Reducing food waste, one plate at a time.</p>
+    <p style="margin-top:6px">© 2026 sharePlate. All rights reserved.</p>
+  </div>
+</div>
+ 
+<!-- LOGIN MODAL -->
+<div class="mo" id="mLogin">
+  <div class="md">
+    <button class="md-close" onclick="cm('Login')">✕</button>
+    <div class="md-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="#3ab5e6"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>sharePlate</div>
+    <h2>Welcome back</h2>
+    <p class="md-sub">No account? <a onclick="sm('Login','Signup')">Sign up free</a></p>
+    <div id="loginForm">
+      <div class="mfg"><label>Email</label><input type="email" id="lEm" placeholder="you@example.com"/><div class="et" id="lEmE">Enter a valid email.</div></div>
+      <div class="mfg"><label>Password</label><input type="password" id="lPw" placeholder="••••••••"/><div class="et" id="lPwE">Min 6 characters.</div></div>
+      <div class="mfooter"><label class="rem"><input type="checkbox" style="width:auto"/> Remember me</label><span class="fgot">Forgot password?</span></div>
+      <button class="md-submit" id="loginBtn" onclick="doLogin()"><span class="spin"></span><span class="bt">Log In</span></button>
+      <div class="md-div">or</div>
+      <button class="goog-btn" onclick="gAuth()">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+    </div>
+    <div class="md-succ" id="loginSucc"><div class="sk">🎉</div><h3>Welcome back!</h3><p>Redirecting you…</p></div>
+  </div>
+</div>
+ 
+<!-- SIGNUP MODAL -->
+<div class="mo" id="mSignup">
+  <div class="md">
+    <button class="md-close" onclick="cm('Signup')">✕</button>
+    <div class="md-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="#3ab5e6"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>sharePlate</div>
+    <h2>Create account</h2>
+    <p class="md-sub">Already a member? <a onclick="sm('Signup','Login')">Log in</a></p>
+    <div id="signupForm">
+      <div class="mrow">
+        <div class="mfg"><label>First name</label><input type="text" id="sFn" placeholder="Aarav"/><div class="et" id="sFnE">Required.</div></div>
+        <div class="mfg"><label>Last name</label><input type="text" id="sLn" placeholder="Sharma"/><div class="et" id="sLnE">Required.</div></div>
+      </div>
+      <div class="mfg"><label>Email</label><input type="email" id="sEm" placeholder="you@example.com"/><div class="et" id="sEmE">Enter a valid email.</div></div>
+      <div class="mfg"><label>Password</label><input type="password" id="sPw" placeholder="Min 8 characters"/><div class="et" id="sPwE">Min 8 characters.</div></div>
+      <button class="md-submit" id="signupBtn" onclick="doSignup()"><span class="spin"></span><span class="bt">Create Free Account</span></button>
+      <div class="md-div">or</div>
+      <button class="goog-btn" onclick="gAuth()">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+    </div>
+    <div class="md-succ" id="signupSucc"><div class="sk">🌟</div><h3>You're in!</h3><p>Welcome to sharePlate!</p></div>
+  </div>
+</div>
+ 
+<!-- CLAIM MODAL -->
+<div class="mo" id="mClaim">
+  <div class="md">
+    <button class="md-close" onclick="cm('Claim')">✕</button>
+    <h2 id="claimTitle" style="margin-bottom:6px">Claim this food</h2>
+    <p class="md-sub" style="margin-bottom:20px">Send a message to arrange pickup.</p>
+    <div class="mfg"><label>Message (optional)</label><textarea class="mfg" id="claimMsg" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:9px;font-family:inherit;font-size:.9rem;min-height:80px;resize:vertical;outline:none" placeholder="Hi! When can I pick this up?"></textarea></div>
+    <div class="mfg"><label>Preferred pickup time</label><input type="datetime-local" id="claimTime"/></div>
+    <button class="md-submit" onclick="confirmClaim()"><span class="spin"></span><span class="bt">Confirm Claim</span></button>
+  </div>
+</div>
+ 
+<div class="toast" id="tk"></div>
+ 
+<script>
+let user = null, filt = 'all', pending = null, cid = null;
+let foods = [], claims = [];
+ 
+// ── SHARED STORAGE (visible to ALL users) ──
+function saveFoods() {
+  localStorage.setItem('sp_foods', JSON.stringify(foods));
+}
+function saveClaims() {
+  localStorage.setItem('sp_claims', JSON.stringify(claims));
+}
+function loadSharedData() {
+  foods = JSON.parse(localStorage.getItem('sp_foods') || '[]');
+  claims = JSON.parse(localStorage.getItem('sp_claims') || '[]');
+}
+ 
+const catEmoji = {cooked:'🍛',baked:'🍰',produce:'🥦',pantry:'🥫',snacks:'🍿',other:'🍽️'};
+const avatarColors = ['#e53e3e','#dd6b20','#d69e2e','#38a169','#3182ce','#805ad5','#d53f8c'];
+ 
+// ── PAGES ──
+function go(p) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('on'));
+  document.getElementById('page-' + p).classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if (p === 'dashboard') updDash();
+  if (p === 'browse') filterF();
+}
+function authGo(p) { user ? go(p) : (pending = p, om('Login')); }
+ 
+// ── MODAL ──
+function om(n) { document.getElementById('m'+n).classList.add('on'); document.body.style.overflow='hidden'; }
+function cm(n) { document.getElementById('m'+n).classList.remove('on'); document.body.style.overflow=''; }
+function sm(a,b) { cm(a); setTimeout(()=>om(b), 200); }
+document.querySelectorAll('.mo').forEach(el => el.addEventListener('click', e => { if(e.target===el){el.classList.remove('on');document.body.style.overflow='';}}));
+document.addEventListener('keydown', e => { if(e.key==='Escape') document.querySelectorAll('.mo').forEach(m=>m.classList.remove('on')); });
+ 
+// ── VALIDATION ──
+const isEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+function se(id,eid){document.getElementById(id).classList.add('er');document.getElementById(eid).style.display='block'}
+function ce(id,eid){document.getElementById(id).classList.remove('er');document.getElementById(eid).style.display='none'}
+['lEm','lPw','sFn','sLn','sEm','sPw'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',()=>el.classList.remove('er'))});
+ 
+// ── AUTH ──
+function doLogin() {
+  const em = document.getElementById('lEm').value.trim();
+  const pw = document.getElementById('lPw').value;
+  let ok = true;
+  if (!isEmail(em)) { se('lEm','lEmE'); ok=false; } else ce('lEm','lEmE');
+  if (pw.length < 6) { se('lPw','lPwE'); ok=false; } else ce('lPw','lPwE');
+  if (!ok) return;
+  const b = document.getElementById('loginBtn'); b.classList.add('ld');
+  setTimeout(() => {
+    b.classList.remove('ld');
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('loginSucc').style.display = 'block';
+    const fn = cap(em.split('@')[0]);
+    user = { name: fn + ' User', email: em, fn, color: randColor() };
+    setTimeout(() => { cm('Login'); onIn(); }, 1000);
+  }, 1400);
+}
+ 
+function doSignup() {
+  const fn = document.getElementById('sFn').value.trim();
+  const ln = document.getElementById('sLn').value.trim();
+  const em = document.getElementById('sEm').value.trim();
+  const pw = document.getElementById('sPw').value;
+  let ok = true;
+  if (!fn) { se('sFn','sFnE'); ok=false; } else ce('sFn','sFnE');
+  if (!ln) { se('sLn','sLnE'); ok=false; } else ce('sLn','sLnE');
+  if (!isEmail(em)) { se('sEm','sEmE'); ok=false; } else ce('sEm','sEmE');
+  if (pw.length < 8) { se('sPw','sPwE'); ok=false; } else ce('sPw','sPwE');
+  if (!ok) return;
+  const b = document.getElementById('signupBtn'); b.classList.add('ld');
+  setTimeout(() => {
+    b.classList.remove('ld');
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('signupSucc').style.display = 'block';
+    user = { name: fn+' '+ln, email: em, fn, color: randColor() };
+    setTimeout(() => { cm('Signup'); onIn(); }, 1000);
+  }, 1600);
+}
+ 
+function gAuth() {
+  user = { name:'Aarav Sharma', email:'aarav@gmail.com', fn:'Aarav', color: randColor() };
+  cm('Login'); cm('Signup'); onIn();
+}
+ 
+function onIn() {
+  document.getElementById('nLogin').style.display = 'none';
+  document.getElementById('nSignup').style.display = 'none';
+  document.getElementById('nDash').style.display = 'flex';
+  document.getElementById('nOut').style.display = 'flex';
+  toast('👋 Welcome, ' + user.fn + '!');
+  if (pending) { go(pending); pending = null; } else go('dashboard');
+}
+ 
+function logout() {
+  user = null;
+  document.getElementById('nLogin').style.display = '';
+  document.getElementById('nSignup').style.display = '';
+  document.getElementById('nDash').style.display = 'none';
+  document.getElementById('nOut').style.display = 'none';
+  // reset modals
+  ['loginForm','signupForm'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display=''; });
+  ['loginSucc','signupSucc'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
+  go('home'); toast('Logged out. See you soon!');
+}
+ 
+// ── DASHBOARD ──
+function switchTab(name, btn) {
+  document.querySelectorAll('.dtab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('on'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('on');
+}
+ 
+function renderItemRow(f) {
+  const statusCls = f.status==='claimed'?'st-claimed':f.status==='pending'?'st-pending':'st-avail';
+  const statusTxt = f.status==='claimed'?'Claimed':f.status==='pending'?'Pending Claim':'Available';
+  const delBtn = f.status!=='claimed' ? '<button style="border:none;background:none;cursor:pointer;color:#a0aec0;font-size:1rem;padding:4px" onclick="delFood('+f.id+')" title="Delete">🗑️</button>' : '';
+  let claimAlert = '';
+  if (f.pendingClaim && f.status==='pending') {
+    const msg = f.pendingClaim.msg ? ' &mdash; <em>"'+f.pendingClaim.msg+'"</em>' : '';
+    claimAlert = '<div class="claim-alert">'
+      + '<div><span>🙋 <strong>'+f.pendingClaim.claimedByName+'</strong> wants to claim this food'+msg+'</span>'
+      + '<div style="font-size:.78rem;color:#92400e;margin-top:3px">Requested: '+f.pendingClaim.date+'</div></div>'
+      + '<div style="display:flex;gap:8px;margin-left:auto;flex-shrink:0">'
+      + '<button class="btn-accept" onclick="acceptClaim('+f.id+')">✓ Accept</button>'
+      + '<button class="btn-reject" onclick="rejectClaim('+f.id+')">✕ Reject</button>'
+      + '</div></div>';
+  }
+  return '<div class="item-row" style="flex-direction:column;align-items:stretch">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between">'
+    + '<div class="item-info"><h4>'+(catEmoji[f.cat]||'🍽️')+' '+f.name+'</h4><p>'+f.date+'</p></div>'
+    + '<div style="display:flex;align-items:center;gap:8px">'
+    + '<span class="item-status '+statusCls+'">'+statusTxt+'</span>'
+    + delBtn
+    + '</div></div>'
+    + claimAlert
+    + '</div>';
+}
+ 
+async function updDash() {
+  loadSharedData();
+  if (!user) return;
+  const mine = foods.filter(f => f.owner === user.email);
+  document.getElementById('profAv').textContent = user.fn[0].toUpperCase();
+  document.getElementById('profAv').style.background = 'linear-gradient(135deg,' + user.color + ',#48d1a8)';
+  document.getElementById('profName').textContent = user.name;
+  document.getElementById('profEmail').textContent = user.email;
+  document.getElementById('psShared').textContent = mine.length;
+  document.getElementById('psClaimed').textContent = claims.filter(c => c.claimedBy === user.email).length;
+  // items list
+  document.getElementById('itemsCount').textContent = mine.length + ' item(s) shared';
+  const il = document.getElementById('itemsList');
+  if (!mine.length) {
+    il.innerHTML = '<div class="no-items">No items shared yet.</div>';
+  } else {
+    il.innerHTML = mine.map(f => renderItemRow(f)).join('');
+  }
+  // claims list
+  const cl = document.getElementById('claimsList');
+  const myClaims = claims.filter(c => c.claimedBy === user.email);
+  if (!myClaims.length) {
+    cl.innerHTML = '<div class="no-items">No claims yet. <a style="color:#3ab5e6;cursor:pointer" onclick="go(\'browse\')">Browse food →</a></div>';
+  } else {
+    cl.innerHTML = myClaims.map(c => `
+      <div class="claim-row">
+        <div class="claim-info">
+          <h4>${c.foodName}</h4>
+          <p>Claimed on ${c.date}</p>
+        </div>
+        <span class="item-status ${c.status==='accepted'?'st-claimed':c.status==='rejected'?'':'st-pending'}"
+          style="${c.status==='rejected'?'background:#fee2e2;color:#c53030':''}"
+        >${c.status==='accepted'?'✅ accepted':c.status==='rejected'?'❌ rejected':'⏳ pending'}</span>
+      </div>`).join('');
+  }
+}
+ 
+// ── SHARE ──
+function doShare() {
+  const name = document.getElementById('sName').value.trim();
+  if (!name) {
+    document.getElementById('fg-name').classList.add('er');
+    document.getElementById('sNameErr').style.display = 'block';
+    return;
+  }
+  document.getElementById('fg-name').classList.remove('er');
+  document.getElementById('sNameErr').style.display = 'none';
+  const b = document.getElementById('shareBtn'); b.classList.add('ld');
+  setTimeout(() => {
+    b.classList.remove('ld');
+    loadSharedData(); // refresh before push
+    const now = new Date();
+    foods.push({
+      id: Date.now(),
+      name,
+      desc: document.getElementById('sDesc').value.trim(),
+      cat: document.getElementById('sCat').value,
+      qty: document.getElementById('sQty').value.trim(),
+      exp: document.getElementById('sExp').value,
+      addr: document.getElementById('sAddr').value.trim(),
+      lat: document.getElementById('sLat').value,
+      lng: document.getElementById('sLng').value,
+      owner: user.email,
+      ownerName: user.fn,
+      ownerColor: user.color,
+      tp: 'free',
+      ug: false,
+      status: 'available',
+      date: now.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})
+    });
+    saveFoods();
+    // reset form
+    ['sName','sDesc','sQty','sAddr','sLat','sLng'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('sCat').value = 'other';
+    document.getElementById('sExp').value = '';
+    toast('🎉 Your food is now listed!');
+    setTimeout(() => go('dashboard'), 600);
+  }, 1200);
+}
+ 
+async function delFood(id) {
+  loadSharedData();
+  foods = foods.filter(f => f.id !== id);
+  await saveFoods(); updDash(); filterF(); toast('🗑️ Listing removed.');
+}
+ 
+// ── BROWSE ──
+async function filterF() {
+  loadSharedData();
+  const g = document.getElementById('fg');
+  if (!user) {
+    g.innerHTML = `<div class="lock-wall">
+      <div class="lw-icon">🔒</div>
+      <h3>Login to Browse Food</h3>
+      <p>Sign in to see food listings shared by your community.</p>
+      <div class="btns">
+        <button class="btn-primary" onclick="om('Login')">Log In</button>
+        <button class="btn-outline" onclick="om('Signup')">Sign Up Free</button>
+      </div>
+    </div>`; return;
+  }
+  const q = (document.getElementById('srch').value || '').toLowerCase();
+  const list = foods.filter(f => {
+    const mf = filt==='all' || f.tp===filt || (filt==='urgent'&&f.ug);
+    const ms = !q || f.name.toLowerCase().includes(q) || (f.desc||'').toLowerCase().includes(q);
+    return mf && ms;
+  });
+  if (!list.length && !foods.length) {
+    g.innerHTML = `<div class="empty-wall"><div class="ew-icon">🍽️</div><h3>No Food Listed Yet</h3><p>Be the first to share food with your community!</p><button class="btn-primary" onclick="go('share')">Share Your Food</button></div>`; return;
+  }
+  if (!list.length) {
+    g.innerHTML = `<div class="empty-wall"><div class="ew-icon">🔍</div><h3>No results found</h3><p>Try adjusting your search or filters.</p></div>`; return;
+  }
+  g.innerHTML = list.map(f => `
+    <div class="fcard">
+      <div class="fcard-img" style="background:linear-gradient(135deg,#e8f4fd,#e8f8ee)">
+        <span>${catEmoji[f.cat]||'🍽️'}</span>
+        <span class="fbadge ${f.status==='claimed'?'bswap':f.status==='pending'?'burgent':'bfree'}">${f.status==='claimed'?'Claimed':f.status==='pending'?'Pending':'Free'}</span>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">${f.name}</div>
+        <div class="fcard-desc">${f.desc||'No description provided.'}</div>
+        <div class="fcard-meta">
+          <div class="fcard-user">
+            <div class="avatar" style="background:${f.ownerColor||'#3ab5e6'}">${f.ownerName[0]}</div>
+            ${f.ownerName}
+          </div>
+          <div class="fcard-loc">📍 ${f.addr||'Location not set'}</div>
+        </div>
+      </div>
+      <div class="fcard-actions">
+        <button class="btn-claim" onclick="openClaim(${f.id})" ${f.status==='claimed'||f.status==='pending'?'disabled style="opacity:.4;cursor:not-allowed"':''}>Claim</button>
+        <button class="btn-save" id="sv${f.id}" onclick="toggleSave(${f.id},this)">🤍</button>
+      </div>
+    </div>`).join('');
+}
+ 
+function setF(btn, f) {
+  filt = f;
+  document.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterF();
+}
+function toggleSave(id, btn) {
+  btn.classList.toggle('saved');
+  btn.textContent = btn.classList.contains('saved') ? '❤️' : '🤍';
+  toast(btn.classList.contains('saved') ? '❤️ Saved!' : '🤍 Removed from saved');
+}
+ 
+// ── CLAIM ──
+function openClaim(id) {
+  if (!user) { om('Login'); return; }
+  cid = Number(id);
+  const f = foods.find(x => x.id === id);
+  document.getElementById('claimTitle').textContent = 'Claim: ' + f.name;
+  document.getElementById('claimMsg').value = '';
+  document.getElementById('claimTime').value = '';
+  om('Claim');
+}
+function confirmClaim() {
+  const b = document.querySelector('#mClaim .md-submit'); b.classList.add('ld');
+  setTimeout(() => {
+    b.classList.remove('ld');
+    loadSharedData();
+    const f = foods.find(x => Number(x.id) === Number(cid));
+    if (f) {
+      // Attach pending claim to the food so owner can see & accept
+      f.pendingClaim = {
+        claimedBy: user.email,
+        claimedByName: user.name,
+        msg: document.getElementById('claimMsg').value.trim(),
+        time: document.getElementById('claimTime').value,
+        date: new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})
+      };
+      f.status = 'pending';
+      claims.push({ foodName: f.name, foodId: f.id, claimedBy: user.email, claimedByName: user.name, status: 'pending', date: f.pendingClaim.date });
+      saveFoods(); saveClaims();
+    }
+    cm('Claim');
+    filterF();
+    toast('🎉 Request sent! Waiting for the owner to accept.');
+  }, 1100);
+}
+ 
+async function acceptClaim(foodId) {
+  loadSharedData();
+  const f = foods.find(x => Number(x.id) === Number(foodId));
+  if (!f || !f.pendingClaim) return;
+  f.status = 'claimed';
+  // update the claim record
+  const c = claims.find(x => x.foodId === foodId && x.claimedBy === f.pendingClaim.claimedBy);
+  if (c) c.status = 'accepted';
+  await saveFoods(); await saveClaims(); updDash(); filterF();
+  toast('✅ Claim accepted! ' + f.pendingClaim.claimedByName + ' has been notified.');
+}
+ 
+async function rejectClaim(foodId) {
+  loadSharedData();
+  const f = foods.find(x => Number(x.id) === Number(foodId));
+  if (!f || !f.pendingClaim) return;
+  const c = claims.find(x => x.foodId === foodId && x.claimedBy === f.pendingClaim.claimedBy);
+  if (c) c.status = 'rejected';
+  f.pendingClaim = null;
+  f.status = 'available';
+  await saveFoods(); await saveClaims(); updDash(); filterF();
+  toast('❌ Claim rejected. Food is available again.');
+}
+ 
+// ── UTILS ──
+function cap(s) { return s.charAt(0).toUpperCase()+s.slice(1); }
+function randColor() { return avatarColors[Math.floor(Math.random()*avatarColors.length)]; }
+function toast(msg) {
+  const el = document.getElementById('tk');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2800);
+}
+ 
+// ── INIT ──
+(() => { loadSharedData(); filterF(); })();
+ 
+// Live updates every 4s
+setInterval(async () => {
+  const browse = document.getElementById('page-browse');
+  if (browse && browse.classList.contains('on')) filterF();
+  const dash = document.getElementById('page-dashboard');
+  if (dash && dash.classList.contains('on') && user) updDash();
+}, 4000);
+ 
+// Refresh on tab focus
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    filterF();
+    if (user) updDash();
+  }
+});
+</script>
+</body>
+</html>
+ 
